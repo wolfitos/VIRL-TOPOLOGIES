@@ -102,7 +102,16 @@ PqlfKKM"
     traffic-optimization-policy default
     #exit
   #exit
-  context sgw
+
+  context pgw
+    ip access-list ecs
+      redirect css service lte any
+    #exit
+    ip pool pool-1 10.10.0.0 255.255.0.0 public 0
+    interface gx-loop loopback
+      ip address 172.16.2.10 255.255.255.255
+    #exit
+    
     interface phy_sgw_int
       ip address 192.168.3.2 255.255.255.248
     #exit
@@ -111,50 +120,6 @@ PqlfKKM"
     #exit
     interface s5-loop loopback
       ip address 172.16.2.6 255.255.255.255
-    #exit
-    subscriber default
-    exit
-    aaa group default
-    #exit
-    gtpp group default
-    #exit
-    gtpu-service gtpu-svc
-      max-retransmissions 3
-      bind ipv4-address 172.16.2.4
-    exit
-    gtpu-service gtpu-svc-s5
-      max-retransmissions 3
-      bind ipv4-address 172.16.2.6
-    exit
-    egtp-service sgwin
-      gtpc max-retransmissions 3
-      interface-type interface-sgw-ingress
-      associate gtpu-service gtpu-svc
-      gtpc bind ipv4-address 172.16.2.4
-    exit
-    egtp-service sgwout
-      gtpc max-retransmissions 3
-      interface-type interface-sgw-egress
-      associate gtpu-service gtpu-svc-s5
-      gtpc bind ipv4-address 172.16.2.6
-    exit
-    sgw-service sgw-svc
-      associate ingress egtp-service sgwin
-      associate egress-proto gtp egress-context sgw egtp-service sgwout
-      plmn id mcc 111 mnc 222 primary
-      no reporting-action event-record
-    #exit
-    ip route 0.0.0.0 0.0.0.0 192.168.3.1 phy_sgw_int
-    ip igmp profile default
-    #exit
-  #exit
-  context pgw
-    ip access-list ecs
-      redirect css service lte any
-    #exit
-    ip pool pool-1 10.10.0.0 255.255.0.0 public 0
-    interface gx-loop loopback
-      ip address 172.16.2.10 255.255.255.255
     #exit
     interface gy-loop loopback
       ip address 172.16.2.12 255.255.255.255
@@ -209,11 +174,53 @@ PqlfKKM"
     exit
     pgw-service pgw-svc
       plmn id mcc 111 mnc 222 
-      authorize-with-hss 
+      authorize-with-hss
       associate egtp-service pgwin
+      associate ggsn-service ggsn-Claro-AR
       egtp create-session-rsp apn-ambr-always-include
     exit
+    
+    sgw-service sgw-svc
+      associate ingress egtp-service sgwin
+      associate egress-proto gtp egress-context sgw egtp-service sgwout
+      plmn id mcc 111 mnc 222 primary
+      no reporting-action event-record
+    #exit
+    
+    gtpu-service gtpu-svc
+      max-retransmissions 3
+      bind ipv4-address 172.16.2.4
+    exit
+    gtpu-service gtpu-svc-s5
+      max-retransmissions 3
+      bind ipv4-address 172.16.2.6
+    exit
+    
+    egtp-service sgwin
+      gtpc max-retransmissions 3
+      interface-type interface-sgw-ingress
+      associate gtpu-service gtpu-svc
+      gtpc bind ipv4-address 172.16.2.4
+    exit
+    
+    egtp-service sgwout
+      gtpc max-retransmissions 3
+      interface-type interface-sgw-egress
+      associate gtpu-service gtpu-svc-s5
+      gtpc bind ipv4-address 172.16.2.6
+    exit
+    
+    ggsn-service ggsn-Claro-AR
+      gtpc suppress-nrupc cpc qos-change
+      gtpc suppress-nrupc upc qos-change
+      plmn unlisted-sgsn foreign
+      associate gtpu-service gtpu-svc
+      associate pgw-service pgw-svc
+      bind ipv4-address 172.16.2.4
+    #exit
+    
     ip route 0.0.0.0 0.0.0.0 192.168.3.9 phy_pgw_int
+    
     diameter endpoint pgw-gx
       origin realm cisco.com
       use-proxy
@@ -237,6 +244,7 @@ PqlfKKM"
     ip igmp profile default
     #exit
   #exit
+  
   user-plane-group default
     sx-reassociation enabled
   #exit
@@ -244,7 +252,7 @@ PqlfKKM"
     no shutdown
     vlan 2001
       no shutdown
-      bind interface phy_sgw_int sgw
+      bind interface phy_sgw_int pgw
     #exit
     vlan 2002
       no shutdown
@@ -366,13 +374,17 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route 172.16.2.2 255.255.255.255 192.168.3.2
-ip route 172.16.2.4 255.255.255.255 192.168.3.2
-ip route 172.16.2.6 255.255.255.255 192.168.3.2
+ip route 172.16.2.2 255.255.255.255 192.168.3.10
+ip route 172.16.2.4 255.255.255.255 192.168.3.10
+ip route 172.16.2.6 255.255.255.255 192.168.3.10
 ip route 172.16.2.8 255.255.255.255 192.168.3.10
 ip route 172.16.2.10 255.255.255.255 192.168.3.10
 ip route 172.16.2.12 255.255.255.255 192.168.3.10
 ip route 172.16.2.14 255.255.255.255 192.168.3.10
+ip route 192.168.2.7 255.255.255.255 192.168.2.2 
+ip route 192.168.2.3 255.255.255.255 192.168.2.2 
+ip route 192.168.2.5 255.255.255.255 192.168.2.2 
+ip route 192.168.2.7 255.255.255.255 192.168.2.2 
 !         
 ipv6 ioam timestamp
 !
