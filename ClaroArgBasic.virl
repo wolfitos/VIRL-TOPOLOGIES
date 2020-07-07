@@ -3,23 +3,22 @@
     <extensions>
         <entry key="management_network" type="String">flat</entry>
     </extensions>
-    <node name="staros-1" type="SIMPLE" subtype="StarOS" location="145,285" vmImage="StarOS-74825 [f0262eb7-7b65-473f-b856-c44a9193bc1d]" vmFlavor="StarOS-Large-HDRAID [b51820c2-2a88-4549-aa17-457bee8a5c4d]">
+    <node name="staros-1" type="SIMPLE" subtype="StarOS" location="145,285" vmImage="StarOS-74825 [f0262eb7-7b65-473f-b856-c44a9193bc1d]" vmFlavor="StarOs.LargeRamCPU [7]">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">config
 license key "\
-VER=1|DOI=1594135706|DOE=1610033306|ISS=3|NUM=208373|CMT=Lab_VPCDI_Cor\
-doba|LSG=10000|LEC=30000|LGT=10000|FIS=Y|FR4=Y|FTC=Y|FSR=Y|FPM=Y|FID=Y\
-|FI6=Y|FLI=Y|FFA=Y|FCA=Y|FTM=Y|FTP=Y|FDR=Y|FDC=Y|FGR=Y|FAA=Y|FDQ=Y|FEL\
-=Y|BEP=Y|FAI=Y|LPP=10000|LSF=10000|FSG=Y|LGW=10000|HIL=XT2|LSB=10000|L\
-MM=10000|FND=Y|FRE=Y|FOP=Y|FRB=Y|FLP=Y|LEP=10000|FEE=Y|FDS=Y|LSE=10000\
-|LEN=10000|FGD=Y|FAU=Y|FPA=Y|FCN=Y|FWI=Y|FAG=Y|LDT=10000|LEX=10000|FSX\
-=Y|FNS=Y|LNS=10000|SIG=MC0CFQDe0TZ64sSUa5aRS0cYZKAFXjvreAIUKFvKfRzqzyz\
-tMzo46YxZVzKDUDA"
+VER=1|DOI=1594142597|DOE=1610040197|ISS=3|NUM=208382|CMT=QVPC-SI_for_V\
+IRL|LSH=10000|LSG=10000|LSL=10000|LEC=11000|LGT=10000|FIS=Y|FR4=Y|FTC=\
+Y|FSR=Y|FPM=Y|FID=Y|FI6=Y|FLI=Y|FFA=Y|FCA=Y|FDA=Y|FTP=Y|FVP=Y|BVP=Y|FD\
+C=Y|FGR=Y|FAA=Y|FDQ=Y|FEL=Y|BEP=Y|FIP=Y|FAI=Y|LPP=1000|LSF=1000|LGW=10\
+000|HIL=XT2|LSB=10000|LMM=10000|FND=Y|FNL=Y|FNB=Y|FNV=Y|FVO=Y|FST=Y|FL\
+P=Y|FV1=Y|LSE=10000|LDT=10000|LEX=10000|LTO=161000|FNS=Y|LNS=10000|FIA\
+=Y|SIG=MC0CFQCudRbvWVg4sizHrKxJhMTcKs535gIUazAGnW0mppRAkgP0Bvo6sQ9gQ2g"
   iftask restart-enable
   require active-charging 
   require diameter-proxy multiple
-  task facility sessmgr max 2
+  task facility sessmgr max 3
   context local
     interface local
       ip address 172.16.1.10 255.255.255.0
@@ -84,14 +83,6 @@ tMzo46YxZVzKDUDA"
     rulebase default
     #exit
     rulebase internal
-      action priority 140 ruledef dns-pkts charging-action 105
-      action priority 160 ruledef udp-pkts charging-action 105
-      action priority 3000 ruledef tcp-pkts charging-action 105
-      action priority 4000 ruledef icmp-pkts charging-action 105
-      action priority 10000 ruledef ip-pkts charging-action 105
-      route priority 5 ruledef http-port analyzer http
-      route priority 6 ruledef https-port analyzer secure-http
-      route priority 9 ruledef ftp analyzer ftp-control
     #exit
     credit-control group dcca-gy
       diameter origin endpoint pgw-gy
