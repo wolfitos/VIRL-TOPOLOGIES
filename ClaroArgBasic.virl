@@ -3,260 +3,6 @@
     <extensions>
         <entry key="management_network" type="String">flat</entry>
     </extensions>
-    <node name="staros-1" type="SIMPLE" subtype="StarOS" location="145,285" vmImage="StarOS-74825 [f0262eb7-7b65-473f-b856-c44a9193bc1d]" vmFlavor="StarOs.LargeRamCPU [7]">
-        <extensions>
-            <entry key="Auto-generate config" type="Boolean">false</entry>
-            <entry key="config" type="String">config
-license key "\
-VER=1|DOI=1594142597|DOE=1610040197|ISS=3|NUM=208382|CMT=QVPC-SI_for_V\
-IRL|LSH=10000|LSG=10000|LSL=10000|LEC=11000|LGT=10000|FIS=Y|FR4=Y|FTC=\
-Y|FSR=Y|FPM=Y|FID=Y|FI6=Y|FLI=Y|FFA=Y|FCA=Y|FDA=Y|FTP=Y|FVP=Y|BVP=Y|FD\
-C=Y|FGR=Y|FAA=Y|FDQ=Y|FEL=Y|BEP=Y|FIP=Y|FAI=Y|LPP=1000|LSF=1000|LGW=10\
-000|HIL=XT2|LSB=10000|LMM=10000|FND=Y|FNL=Y|FNB=Y|FNV=Y|FVO=Y|FST=Y|FL\
-P=Y|FV1=Y|LSE=10000|LDT=10000|LEX=10000|LTO=161000|FNS=Y|LNS=10000|FIA\
-=Y|SIG=MC0CFQCudRbvWVg4sizHrKxJhMTcKs535gIUazAGnW0mppRAkgP0Bvo6sQ9gQ2g"
-  iftask restart-enable
-  require active-charging 
-  require diameter-proxy multiple
-  task facility sessmgr max 3
-  context local
-    interface local
-      ip address 172.16.1.10 255.255.255.0
-    #exit
-    subscriber default
-    exit
-    administrator cisco password cisco
-    aaa group default
-    #exit
-    gtpp group default
-    #exit
-  #exit
-  port ethernet 1/1
-    no shutdown
-    bind interface local local
-  #exit
-  task facility chmgr max 1
-  task facility chmgr per-sesscard-count 0
-  peer-profile service-type sgw-network default
-  #exit
-  peer-profile service-type pgw-access default
-  #exit
-  peer-profile service-type sgw-access default
-  #exit
-   #exit
-  active-charging service lte
-    ruledef dns-pkts
-      tcp either-port = 53
-      udp either-port = 53
-      multi-line-or all-lines
-    #exit
-    ruledef ftp
-      tcp dst-port = 21
-      ip src-address = 10.0.0.0/8
-      rule-application routing
-    #exit
-    ruledef http-port
-      tcp either-port = 80
-      tcp either-port = 8080
-      rule-application routing
-      multi-line-or all-lines
-    #exit
-    ruledef https-port
-      tcp either-port = 443
-      rule-application routing
-    #exit
-    ruledef icmp-pkts
-      ip protocol = 1
-    #exit
-    ruledef ip-pkts
-      ip any-match = TRUE
-    #exit
-    ruledef tcp-pkts
-      tcp any-match = TRUE
-    #exit
-    ruledef udp-pkts
-      udp any-match = TRUE
-    #exit
-    charging-action 105
-      content-id 105
-    #exit
-    rulebase default
-    #exit
-    rulebase internal
-    #exit
-    credit-control group dcca-gy
-      diameter origin endpoint pgw-gy
-      diameter peer-select peer minid-gy.cisco.com realm cisco.com
-      diameter session failover
-      diameter dictionary dcca-custom13
-      failure-handling initial-request retry-and-terminate 
-      usage-reporting quotas-to-report based-on-grant
-    #exit
-     #exit
-  #exit
-
-  context pgw
-    ip access-list ecs
-      redirect css service lte any
-    #exit
-    ip pool pool-1 10.10.0.0 255.255.0.0 public 0
-    interface gx-loop loopback
-      ip address 172.16.2.10 255.255.255.255
-    #exit
-    
-    interface phy_sgw_int
-      ip address 192.168.3.2 255.255.255.248
-    #exit
-    interface s11-s1u-loop loopback
-      ip address 172.16.2.4 255.255.255.255
-    #exit
-    interface s5-loop loopback
-      ip address 172.16.2.6 255.255.255.255
-    #exit
-    interface gy-loop loopback
-      ip address 172.16.2.12 255.255.255.255
-    #exit
-    interface pgw-s5-loop loopback
-      ip address 172.16.2.8 255.255.255.255
-    #exit
-    interface phy_pgw_int
-      ip address 192.168.3.10 255.255.255.248
-    #exit
-    interface s6b-loop loopback
-      ip address 172.16.2.14 255.255.255.255
-    #exit
-    subscriber default
-    exit
-    apn cisco
-      selection-mode subscribed sent-by-ms
-      ims-auth-service ims-gx
-      ip access-group ecs in
-      ip access-group ecs out
-      ip context-name pgw
-      ip address pool name pool-1
-      cc-profile any credit-control-group dcca-gy
-      active-charging rulebase internal
-    exit
-    aaa group default
-      diameter authentication dictionary aaa-custom15
-      diameter authentication endpoint pgw-s6b
-      diameter authentication server minid-s6b.cisco.com priority 1
-    #exit
-    gtpp group default
-    #exit
-    gtpu-service gtpu-pgw-s5
-      max-retransmissions 3
-      bind ipv4-address 172.16.2.8
-    exit
-    ims-auth-service ims-gx
-      policy-control
-        diameter origin endpoint pgw-gx
-        diameter dictionary r8-gx-standard
-        no event-report-indication
-        custom-reauth-trigger qos-change default-bearer-qos-change ue-ip-addr-allocate ue-ip-addr-release resource-modification-request apn-ambr-mod-failure default-bearer-qos-mod-failure
-        diameter host-select table 1 algorithm round-robin
-        diameter host-select row-precedence 1 table 1 host minid-gx.cisco.com
-      #exit
-    #exit
-    egtp-service pgwin
-      gtpc max-retransmissions 3
-      interface-type interface-pgw-ingress
-      associate gtpu-service gtpu-pgw-s5
-      gtpc bind ipv4-address 172.16.2.8
-    exit
-    pgw-service pgw-svc
-      plmn id mcc 111 mnc 222 
-      authorize-with-hss
-      associate egtp-service pgwin
-      associate ggsn-service ggsn-Claro-AR
-      egtp create-session-rsp apn-ambr-always-include
-    exit
-    
-    sgw-service sgw-svc
-      associate ingress egtp-service sgwin
-      associate egress-proto gtp egress-context sgw egtp-service sgwout
-      plmn id mcc 111 mnc 222 primary
-      no reporting-action event-record
-    #exit
-    
-    gtpu-service gtpu-svc
-      max-retransmissions 3
-      bind ipv4-address 172.16.2.4
-    exit
-    gtpu-service gtpu-svc-s5
-      max-retransmissions 3
-      bind ipv4-address 172.16.2.6
-    exit
-    
-    egtp-service sgwin
-      gtpc max-retransmissions 3
-      interface-type interface-sgw-ingress
-      associate gtpu-service gtpu-svc
-      gtpc bind ipv4-address 172.16.2.4
-    exit
-    
-    egtp-service sgwout
-      gtpc max-retransmissions 3
-      interface-type interface-sgw-egress
-      associate gtpu-service gtpu-svc-s5
-      gtpc bind ipv4-address 172.16.2.6
-    exit
-    
-    ggsn-service ggsn-Claro-AR
-      gtpc suppress-nrupc cpc qos-change
-      gtpc suppress-nrupc upc qos-change
-      plmn unlisted-sgsn foreign
-      associate gtpu-service gtpu-svc
-      associate pgw-service pgw-svc
-      bind ipv4-address 172.16.2.4
-    #exit
-    
-    ip route 0.0.0.0 0.0.0.0 192.168.3.9 phy_pgw_int
-    
-    diameter endpoint pgw-gx
-      origin realm cisco.com
-      use-proxy
-      origin host asr5k-1.gx.cisco.com address 172.16.2.10
-      peer minid-gx.cisco.com realm cisco.com address 192.168.2.3
-      route-entry peer minid-gx.cisco.com
-    #exit
-    diameter endpoint pgw-gy
-      origin realm cisco.com
-      use-proxy
-      origin host asr5k-1.gy.cisco.com address 172.16.2.12
-      peer minid-gy.cisco.com realm cisco.com address 192.168.2.5 port 3869
-      route-entry peer minid-gy.cisco.com
-    #exit
-    diameter endpoint pgw-s6b
-      origin realm cisco.com
-      origin host asr5k-1.s6b.cisco.com address 172.16.2.14
-      peer minid-s6b.cisco.com realm cisco.com address 192.168.2.7 port 3870
-      route-entry peer minid-s6b.cisco.com
-    #exit
-    ip igmp profile default
-    #exit
-  #exit
-  
-  user-plane-group default
-    sx-reassociation enabled
-  #exit
-  port ethernet 1/11
-    no shutdown
-    vlan 2001
-      no shutdown
-      bind interface phy_sgw_int pgw
-    #exit
-    vlan 2002
-      no shutdown
-      bind interface phy_pgw_int pgw
-    #exit
-  #exit
-end</entry>
-        </extensions>
-        <interface id="0" name="ethernet 1/10"/>
-        <interface id="1" name="ethernet 1/11"/>
-        <interface id="2" name="ethernet 1/12"/>
-    </node>
     <node name="iosv-1" type="SIMPLE" subtype="IOSv" location="413,306" vmImage="IOSv [c57ac9c7-e02e-40f0-823a-99a9374e398b]" vmFlavor="IOSv [bbc49266-71d5-4e23-9ffd-461ac26017f9]">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
@@ -427,7 +173,7 @@ end</entry>
         <interface id="2" name="GigabitEthernet0/3"/>
         <interface id="3" name="GigabitEthernet0/4"/>
     </node>
-    <node name="tools" type="SIMPLE" subtype="server" location="544,134" vmImage="server-Ubuntu-Server_v17.28 [d7550bed-a84c-4f35-9a08-bcc97faf2e9a]" vmFlavor="m1.medium [3]">
+    <node name="tools" type="SIMPLE" subtype="server" location="414,169" vmImage="server-Ubuntu-Server_v17.28 [d7550bed-a84c-4f35-9a08-bcc97faf2e9a]" vmFlavor="m1.medium [3]">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">#cloud-config
@@ -505,7 +251,7 @@ write_files:
         </extensions>
         <interface id="0" name="eth1"/>
     </node>
-    <node name="data lattice" type="SIMPLE" subtype="server" location="601,440" vmImage="server-Ubuntu-Server_v17.28 [d7550bed-a84c-4f35-9a08-bcc97faf2e9a]" vmFlavor="m1.medium [3]">
+    <node name="data lattice" type="SIMPLE" subtype="server" location="413,435" vmImage="server-Ubuntu-Server_v17.28 [d7550bed-a84c-4f35-9a08-bcc97faf2e9a]" vmFlavor="m1.medium [3]">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">#cloud-config
@@ -579,7 +325,7 @@ write_files:
         </extensions>
         <interface id="0" name="eth1"/>
     </node>
-    <node name="Gi router" type="SIMPLE" subtype="IOSvL2" location="671,263" vmImage="IOSvL2 [377b8aa9-aeed-4394-ba1b-4ef7f869f875]" vmFlavor="IOSvL2 [058351c0-94b8-43a4-967a-bdee230885b7]">
+    <node name="Gi router" type="SIMPLE" subtype="IOSvL2" location="528,304" vmImage="IOSvL2 [377b8aa9-aeed-4394-ba1b-4ef7f869f875]" vmFlavor="IOSvL2 [058351c0-94b8-43a4-967a-bdee230885b7]">
         <extensions>
             <entry key="config" type="String">!
 ! Last configuration change at 13:45:40 EST Thu Nov 9 2017
@@ -702,9 +448,261 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
+    <node name="staros-2" type="SIMPLE" subtype="StarOS" location="213,307" vmImage="StarOS-74825 [f0262eb7-7b65-473f-b856-c44a9193bc1d]" vmFlavor="StarOs.LargeRamCPU [7]">
+        <extensions>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="config" type="String">config
+  cli hidden
+  tech-support test-command password boxer 
+license key "\
+VER=1|DOI=1594150278|DOE=1610047878|ISS=1|NUM=208390|CMT=Lab_VPCDI_Cor\
+doba|LSG=50000|LEC=105000|LGT=50000|FIS=Y|FR4=Y|FTC=Y|FSR=Y|FPM=Y|FID=\
+Y|FI6=Y|FLI=Y|FFA=Y|FCA=Y|FTM=Y|FTP=Y|FDR=Y|FDC=Y|FGR=Y|FAA=Y|FDQ=Y|FE\
+L=Y|BEP=Y|FAI=Y|LPP=5000|LSF=5000|FSG=Y|LGW=50000|HIL=XT2|LSB=50000|LM\
+M=50000|FND=Y|FRE=Y|FOP=Y|FRB=Y|FLP=Y|LEP=70000000|FEE=Y|FDS=Y|LSE=500\
+00|LEN=50000|FGD=Y|FAU=Y|FPA=Y|FCN=Y|FWI=Y|FAG=Y|LDT=5000|LEX=5000|FSX\
+=Y|FNS=Y|LNS=5000|SIG=MC0CFQDVpCZcCMskaD2k7Z8cESyyv86tcAIURDJ23agIHZSw\
+RHY7bMpFT5k4cvc"
+  iftask restart-enable
+  require active-charging 
+  require diameter-proxy multiple
+  context local
+    interface local
+      ip address 172.16.1.10 255.255.255.0
+    #exit
+    subscriber default
+    exit
+    administrator cisco password cisco
+    aaa group default
+    #exit
+    gtpp group default
+    #exit
+   #exit
+  active-charging service lte
+    ruledef dns-pkts
+      tcp either-port = 53
+      udp either-port = 53
+      multi-line-or all-lines
+    #exit
+    ruledef ftp
+      tcp dst-port = 21
+      ip src-address = 10.0.0.0/8
+      rule-application routing
+    #exit
+    ruledef http-port
+      tcp either-port = 80
+      tcp either-port = 8080
+      rule-application routing
+      multi-line-or all-lines
+    #exit
+    ruledef https-port
+      tcp either-port = 443
+      rule-application routing
+    #exit
+    ruledef icmp-pkts
+      ip protocol = 1
+    #exit
+    ruledef ip-pkts
+      ip any-match = TRUE
+    #exit
+    ruledef tcp-pkts
+      tcp any-match = TRUE
+    #exit
+    ruledef udp-pkts
+      udp any-match = TRUE
+    #exit
+    charging-action 105
+      content-id 105
+    #exit
+    rulebase default
+    #exit
+    rulebase internal
+      action priority 140 ruledef dns-pkts charging-action 105
+      action priority 160 ruledef udp-pkts charging-action 105
+      action priority 3000 ruledef tcp-pkts charging-action 105
+      action priority 4000 ruledef icmp-pkts charging-action 105
+      action priority 10000 ruledef ip-pkts charging-action 105
+      route priority 5 ruledef http-port analyzer http
+      route priority 6 ruledef https-port analyzer secure-http
+      route priority 9 ruledef ftp analyzer ftp-control
+    #exit
+    credit-control group dcca-gy
+      diameter origin endpoint pgw-gy
+      diameter peer-select peer minid-gy.cisco.com realm cisco.com
+      diameter session failover
+      diameter dictionary dcca-custom13
+      failure-handling initial-request retry-and-terminate 
+      usage-reporting quotas-to-report based-on-grant
+    #exit
+  #exit
+
+  context pgw
+    ip access-list ecs
+      redirect css service lte any
+    #exit
+    ip pool pool-1 10.10.0.0 255.255.0.0 public 0
+    interface gx-loop loopback
+      ip address 172.16.2.10 255.255.255.255
+    #exit
+    
+    interface phy_sgw_int
+      ip address 192.168.3.2 255.255.255.248
+    #exit
+    interface s11-s1u-loop loopback
+      ip address 172.16.2.4 255.255.255.255
+    #exit
+    interface s5-loop loopback
+      ip address 172.16.2.6 255.255.255.255
+    #exit
+    interface gy-loop loopback
+      ip address 172.16.2.12 255.255.255.255
+    #exit
+    interface pgw-s5-loop loopback
+      ip address 172.16.2.8 255.255.255.255
+    #exit
+    interface phy_pgw_int
+      ip address 192.168.3.10 255.255.255.248
+    #exit
+    interface s6b-loop loopback
+      ip address 172.16.2.14 255.255.255.255
+    #exit
+    subscriber default
+    exit
+    apn cisco
+      selection-mode subscribed sent-by-ms
+      ims-auth-service ims-gx
+      ip access-group ecs in
+      ip access-group ecs out
+      ip context-name pgw
+      ip address pool name pool-1
+      cc-profile any credit-control-group dcca-gy
+      active-charging rulebase internal
+    exit
+    aaa group default
+      diameter authentication dictionary aaa-custom15
+      diameter authentication endpoint pgw-s6b
+      diameter authentication server minid-s6b.cisco.com priority 1
+    #exit
+    gtpp group default
+    #exit
+    gtpu-service gtpu-pgw-s5
+      max-retransmissions 3
+      bind ipv4-address 172.16.2.8
+    exit
+    ims-auth-service ims-gx
+      policy-control
+        diameter origin endpoint pgw-gx
+        diameter dictionary r8-gx-standard
+        no event-report-indication
+        custom-reauth-trigger qos-change default-bearer-qos-change ue-ip-addr-allocate ue-ip-addr-release resource-modification-request apn-ambr-mod-failure default-bearer-qos-mod-failure
+        diameter host-select table 1 algorithm round-robin
+        diameter host-select row-precedence 1 table 1 host minid-gx.cisco.com
+      #exit
+    #exit
+    egtp-service pgwin
+      gtpc max-retransmissions 3
+      interface-type interface-pgw-ingress
+      associate gtpu-service gtpu-pgw-s5
+      gtpc bind ipv4-address 172.16.2.8
+    exit
+    pgw-service pgw-svc
+      plmn id mcc 111 mnc 222 
+      authorize-with-hss 
+      associate egtp-service pgwin
+      associate ggsn-service ggsn-Claro-AR
+      egtp create-session-rsp apn-ambr-always-include
+    exit
+    
+    sgw-service sgw-svc
+      associate ingress egtp-service sgwin
+      associate egress-proto gtp egress-context sgw egtp-service sgwout
+      plmn id mcc 111 mnc 222 primary
+      no reporting-action event-record
+    #exit
+    
+    gtpu-service gtpu-svc
+      max-retransmissions 3
+      bind ipv4-address 172.16.2.4
+    exit
+    gtpu-service gtpu-svc-s5
+      max-retransmissions 3
+      bind ipv4-address 172.16.2.6
+    exit
+    
+    egtp-service sgwin
+      gtpc max-retransmissions 3
+      interface-type interface-sgw-ingress
+      associate gtpu-service gtpu-svc
+      gtpc bind ipv4-address 172.16.2.4
+    exit
+    
+    egtp-service sgwout
+      gtpc max-retransmissions 3
+      interface-type interface-sgw-egress
+      associate gtpu-service gtpu-svc-s5
+      gtpc bind ipv4-address 172.16.2.6
+    exit
+    
+    ggsn-service ggsn-Claro-AR
+      gtpc suppress-nrupc cpc qos-change
+      gtpc suppress-nrupc upc qos-change
+      plmn unlisted-sgsn foreign
+      associate gtpu-service gtpu-svc
+      associate pgw-service pgw-svc
+      bind ipv4-address 172.16.2.4
+    #exit
+    
+    ip route 0.0.0.0 0.0.0.0 192.168.3.9 phy_pgw_int
+
+
+    diameter endpoint pgw-gx
+      origin realm cisco.com
+      use-proxy
+      origin host asr5k-1.gx.cisco.com address 172.16.2.10
+      peer minid-gx.cisco.com realm cisco.com address 192.168.2.3
+      route-entry peer minid-gx.cisco.com
+    #exit
+    diameter endpoint pgw-gy
+      origin realm cisco.com
+      use-proxy
+      origin host asr5k-1.gy.cisco.com address 172.16.2.12
+      peer minid-gy.cisco.com realm cisco.com address 192.168.2.5 port 3869
+      route-entry peer minid-gy.cisco.com
+    #exit
+    diameter endpoint pgw-s6b
+      origin realm cisco.com
+      origin host asr5k-1.s6b.cisco.com address 172.16.2.14
+      peer minid-s6b.cisco.com realm cisco.com address 192.168.2.7 port 3870
+      route-entry peer minid-s6b.cisco.com
+    #exit
+    ip igmp profile default
+    #exit
+  #exit
+  
+  user-plane-group default
+    sx-reassociation enabled
+  #exit
+  port ethernet 1/11
+    no shutdown
+    vlan 2001
+      no shutdown
+      bind interface phy_sgw_int pgw
+    #exit
+    vlan 2002
+      no shutdown
+      bind interface phy_pgw_int pgw
+    #exit
+  #exit
+end
+end
+  </entry>
+        </extensions>
+        <interface id="0" name="ethernet 1/10"/>
+        <interface id="1" name="ethernet 1/11"/>
+    </node>
     <annotations/>
-    <connection dst="/virl:topology/virl:node[2]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[2]"/>
-    <connection dst="/virl:topology/virl:node[2]/virl:interface[2]" src="/virl:topology/virl:node[3]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[4]/virl:interface[1]" src="/virl:topology/virl:node[2]/virl:interface[3]"/>
-    <connection dst="/virl:topology/virl:node[5]/virl:interface[1]" src="/virl:topology/virl:node[2]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[3]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[4]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[1]" src="/virl:topology/virl:node[5]/virl:interface[2]"/>
 </topology>
