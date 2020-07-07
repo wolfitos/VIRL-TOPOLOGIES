@@ -7,15 +7,19 @@
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">config
-  license key "\
-VER=1|DOI=1593131318|DOE=1608942518|ISS=1|NUM=208160|CMT=virl-repro|LS\
-G=1000000|LEC=1500000|FR4=Y|FSR=Y|FPM=Y|FID=Y|FI6=Y|FLI=Y|FFA=Y|FCA=Y|\
-FTP=Y|FDC=Y|FAA=Y|FDQ=Y|BEP=Y|FAI=Y|LGW=1000000|HIL=XT2|LSB=1000000|FH\
-E=Y|FCG=Y|SIG=MC0CFQCr4MrrYFClvuA1R5KxYobTSIBDcwIUbY6Nr6GogoFn0AdgkAj9\
-PqlfKKM"
+license key "\
+VER=1|DOI=1594135706|DOE=1610033306|ISS=3|NUM=208373|CMT=Lab_VPCDI_Cor\
+doba|LSG=10000|LEC=30000|LGT=10000|FIS=Y|FR4=Y|FTC=Y|FSR=Y|FPM=Y|FID=Y\
+|FI6=Y|FLI=Y|FFA=Y|FCA=Y|FTM=Y|FTP=Y|FDR=Y|FDC=Y|FGR=Y|FAA=Y|FDQ=Y|FEL\
+=Y|BEP=Y|FAI=Y|LPP=10000|LSF=10000|FSG=Y|LGW=10000|HIL=XT2|LSB=10000|L\
+MM=10000|FND=Y|FRE=Y|FOP=Y|FRB=Y|FLP=Y|LEP=10000|FEE=Y|FDS=Y|LSE=10000\
+|LEN=10000|FGD=Y|FAU=Y|FPA=Y|FCN=Y|FWI=Y|FAG=Y|LDT=10000|LEX=10000|FSX\
+=Y|FNS=Y|LNS=10000|SIG=MC0CFQDe0TZ64sSUa5aRS0cYZKAFXjvreAIUKFvKfRzqzyz\
+tMzo46YxZVzKDUDA"
   iftask restart-enable
   require active-charging 
   require diameter-proxy multiple
+  task facility sessmgr max 2
   context local
     interface local
       ip address 172.16.1.10 255.255.255.0
@@ -40,9 +44,7 @@ PqlfKKM"
   #exit
   peer-profile service-type sgw-access default
   #exit
-  mme-manager
-    congestion-control cpu-utilization threshold 90 tolerance 10
-  #exit
+   #exit
   active-charging service lte
     ruledef dns-pkts
       tcp either-port = 53
@@ -99,8 +101,7 @@ PqlfKKM"
       failure-handling initial-request retry-and-terminate 
       usage-reporting quotas-to-report based-on-grant
     #exit
-    traffic-optimization-policy default
-    #exit
+     #exit
   #exit
 
   context pgw
