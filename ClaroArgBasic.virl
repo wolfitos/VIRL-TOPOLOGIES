@@ -647,9 +647,9 @@ RHY7bMpFT5k4cvc"
       gtpc suppress-nrupc cpc qos-change
       gtpc suppress-nrupc upc qos-change
       plmn unlisted-sgsn foreign
-      associate gtpu-service gtpu-svc
+      associate gtpu-service gtpu-pgw-s5
       associate pgw-service pgw-svc
-      bind ipv4-address 172.16.2.4
+      bind ipv4-address 172.16.2.8
     #exit
     
     ip route 0.0.0.0 0.0.0.0 192.168.3.9 phy_pgw_int
@@ -684,10 +684,6 @@ RHY7bMpFT5k4cvc"
   #exit
   port ethernet 1/11
     no shutdown
-    vlan 2001
-      no shutdown
-      bind interface phy_sgw_int pgw
-    #exit
     vlan 2002
       no shutdown
       bind interface phy_pgw_int pgw
