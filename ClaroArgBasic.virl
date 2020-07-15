@@ -172,8 +172,9 @@ end</entry>
         <interface id="1" name="GigabitEthernet0/2"/>
         <interface id="2" name="GigabitEthernet0/3"/>
         <interface id="3" name="GigabitEthernet0/4"/>
+        <interface id="4" name="GigabitEthernet0/5"/>
     </node>
-    <node name="tools" type="SIMPLE" subtype="server" location="414,169" vmImage="server-Ubuntu-Server_v17.28 [d7550bed-a84c-4f35-9a08-bcc97faf2e9a]" vmFlavor="m1.medium [3]">
+    <node name="tools" type="SIMPLE" subtype="server" location="393,169" vmImage="server-Ubuntu-Server_v17.28 [d7550bed-a84c-4f35-9a08-bcc97faf2e9a]" vmFlavor="m1.medium [3]">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">#cloud-config
@@ -325,7 +326,7 @@ write_files:
         </extensions>
         <interface id="0" name="eth1"/>
     </node>
-    <node name="Gi router" type="SIMPLE" subtype="IOSvL2" location="528,304" vmImage="IOSvL2 [377b8aa9-aeed-4394-ba1b-4ef7f869f875]" vmFlavor="IOSvL2 [058351c0-94b8-43a4-967a-bdee230885b7]">
+    <node name="Gi router" type="SIMPLE" subtype="IOSvL2" location="462,172" vmImage="IOSvL2 [377b8aa9-aeed-4394-ba1b-4ef7f869f875]" vmFlavor="IOSvL2 [058351c0-94b8-43a4-967a-bdee230885b7]">
         <extensions>
             <entry key="config" type="String">!
 ! Last configuration change at 13:45:40 EST Thu Nov 9 2017
@@ -448,7 +449,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
-    <node name="staros-2" type="SIMPLE" subtype="StarOS" location="213,307" vmImage="StarOS-74825 [f0262eb7-7b65-473f-b856-c44a9193bc1d]" vmFlavor="StarOs.LargeRamCPU [7]">
+    <node name="staros-2" type="SIMPLE" subtype="StarOS" location="252,288" vmImage="StarOS-74825 [f0262eb7-7b65-473f-b856-c44a9193bc1d]" vmFlavor="StarOs.LargeRamCPU [7]">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">config
@@ -696,9 +697,18 @@ end
         <interface id="0" name="ethernet 1/10"/>
         <interface id="1" name="ethernet 1/11"/>
     </node>
+    <node name="Sae-SIM" type="SIMPLE" subtype="server" location="587,256" vmImage="riteran.qcow2 [8a0a2393-e46f-425d-8537-85ae01c01799]" vmFlavor="Server.COR-VPC-1 [4f32f71e-20c4-4eba-beff-4ea94a44af69]">
+        <extensions>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="config" type="String">#cloud-config
+</entry>
+        </extensions>
+        <interface id="0" name="eth1"/>
+    </node>
     <annotations/>
     <connection dst="/virl:topology/virl:node[1]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[1]"/>
     <connection dst="/virl:topology/virl:node[3]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[3]"/>
     <connection dst="/virl:topology/virl:node[4]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[4]"/>
     <connection dst="/virl:topology/virl:node[1]/virl:interface[1]" src="/virl:topology/virl:node[5]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[5]" src="/virl:topology/virl:node[6]/virl:interface[1]"/>
 </topology>
