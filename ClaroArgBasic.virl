@@ -579,6 +579,13 @@ RHY7bMpFT5k4cvc"
       cc-profile any credit-control-group dcca-gy
       active-charging rulebase internal
     exit
+
+    apn riteran
+      selection-mode subscribed sent-by-ms
+      ip context-name pgw
+      ip address pool name pool-1
+    exit
+
     aaa group default
       diameter authentication dictionary aaa-custom15
       diameter authentication endpoint pgw-s6b
@@ -697,7 +704,7 @@ end
         <interface id="0" name="ethernet 1/10"/>
         <interface id="1" name="ethernet 1/11"/>
     </node>
-    <node name="Sae-SIM" type="SIMPLE" subtype="server" location="587,256" vmImage="riteran.qcow2 [8a0a2393-e46f-425d-8537-85ae01c01799]" vmFlavor="Server.COR-VPC-1 [4f32f71e-20c4-4eba-beff-4ea94a44af69]">
+    <node name="Sae-SIM" type="SIMPLE" subtype="server" location="587,256" vmImage="riteran.qcow2 [8a0a2393-e46f-425d-8537-85ae01c01799]" vmFlavor="riteran.medium [77]">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">#cloud-config
