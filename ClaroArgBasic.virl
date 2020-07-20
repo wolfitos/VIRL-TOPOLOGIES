@@ -459,8 +459,6 @@ end</entry>
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">config
-  cli hidden
-  tech-support test-command password boxer 
 license key "\
 VER=1|DOI=1594150278|DOE=1610047878|ISS=1|NUM=208390|CMT=Lab_VPCDI_Cor\
 doba|LSG=50000|LEC=105000|LGT=50000|FIS=Y|FR4=Y|FTC=Y|FSR=Y|FPM=Y|FID=\
@@ -542,16 +540,15 @@ RHY7bMpFT5k4cvc"
       usage-reporting quotas-to-report based-on-grant
     #exit
   #exit
-
   context pgw
     ip access-list ecs
       redirect css service lte any
     #exit
     ip pool pool-1 10.10.0.0 255.255.0.0 public 0
+    ip pool pool-2 10.20.0.0 255.255.0.0 public 0
     interface gx-loop loopback
       ip address 172.16.2.10 255.255.255.255
     #exit
-    
     interface phy_sgw_int
       ip address 192.168.3.2 255.255.255.248
     #exit
@@ -584,14 +581,10 @@ RHY7bMpFT5k4cvc"
       ip address pool name pool-1
       cc-profile any credit-control-group dcca-gy
       active-charging rulebase internal
-    exit
-
+    #exit
     apn riteran
-      selection-mode subscribed sent-by-ms
-      ip context-name pgw
-      ip address pool name pool-1
-    exit
-
+      ip address pool name pool-1
+    #exit
     aaa group default
       diameter authentication dictionary aaa-custom15
       diameter authentication endpoint pgw-s6b
@@ -692,10 +685,6 @@ RHY7bMpFT5k4cvc"
     ip igmp profile default
     #exit
   #exit
-  
-  user-plane-group default
-    sx-reassociation enabled
-  #exit
   port ethernet 1/11
     no shutdown
     vlan 2002
@@ -703,14 +692,12 @@ RHY7bMpFT5k4cvc"
       bind interface phy_pgw_int pgw
     #exit
   #exit
-end
-end
-  </entry>
+end</entry>
         </extensions>
         <interface id="0" name="ethernet 1/10"/>
         <interface id="1" name="ethernet 1/11"/>
     </node>
-    <node name="Sae-SIM" type="SIMPLE" subtype="server" location="587,256" vmImage="riteran.qcow2 [8a0a2393-e46f-425d-8537-85ae01c01799]" vmFlavor="riteran.medium [77]">
+    <node name="Sae-SIM" type="SIMPLE" subtype="server" location="587,256" vmImage="riteran.server [3835c52b-b26e-4d03-9d53-37d8686272cc]" vmFlavor="riteran.medium [77]">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">#cloud-config
