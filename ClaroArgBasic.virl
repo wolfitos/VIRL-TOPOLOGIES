@@ -700,7 +700,7 @@ end</entry>
         <interface id="0" name="ethernet 1/10"/>
         <interface id="1" name="ethernet 1/11"/>
     </node>
-    <node name="Sae-SIM" type="SIMPLE" subtype="server" location="587,256" vmImage="riteran.server [9e7a1abc-6862-4d5a-a50d-9c2bf232af31]" vmFlavor="riteran.medium [77]">
+    <node name="Sae-SIM" type="SIMPLE" subtype="server" location="587,256" vmImage="riteran.server [9e6c4d2b-b6fd-4051-ba16-0e0b8d73c77c]" vmFlavor="riteran.medium [77]">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">#cloud-config
