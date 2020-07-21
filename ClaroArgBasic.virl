@@ -108,10 +108,13 @@ interface GigabitEthernet0/4
  media-type rj45
 !
 interface GigabitEthernet0/5
- ip address 192.168.5.1 255.255.255.0
  duplex auto
  speed auto
  media-type rj45
+!
+interface GigabitEthernet0/5.500
+ encapsulation dot1Q 500
+ ip address 192.168.5.1 255.255.255.0
 !
 ip forward-protocol nd
 !
@@ -697,7 +700,7 @@ end</entry>
         <interface id="0" name="ethernet 1/10"/>
         <interface id="1" name="ethernet 1/11"/>
     </node>
-    <node name="Sae-SIM" type="SIMPLE" subtype="server" location="587,256" vmImage="riteran.server [3835c52b-b26e-4d03-9d53-37d8686272cc]" vmFlavor="riteran.medium [77]">
+    <node name="Sae-SIM" type="SIMPLE" subtype="server" location="587,256" vmImage="riteran.server [9e7a1abc-6862-4d5a-a50d-9c2bf232af31]" vmFlavor="riteran.medium [77]">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">#cloud-config
