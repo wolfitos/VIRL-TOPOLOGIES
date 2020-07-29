@@ -327,6 +327,7 @@ write_files:
     ifconfig eth1 up
     ifconfig eth1:0 192.168.1.2 255.255.255.0 up
     ifconfig eth1:1 192.168.1.5 255.255.255.0 up
+    ifconfig eth1:2 192.168.1.7 255.255.255.0 up
     route add -net 172.16.2.0/24 gw 192.168.1.1 dev eth1:0
     route add -net 192.168.3.0/24 gw 192.168.1.1 dev eth1:0
     route add -net 192.168.2.0/24 gw 192.168.1.1 dev eth1:0
@@ -585,7 +586,7 @@ RHY7bMpFT5k4cvc"
       cc-profile any credit-control-group dcca-gy
       active-charging rulebase internal
     #exit
-    apn riteran
+    apn starent.com
       ip address pool name pool-1
     #exit
     aaa group default
@@ -625,7 +626,7 @@ RHY7bMpFT5k4cvc"
     
     sgw-service sgw-svc
       associate ingress egtp-service sgwin
-      associate egress-proto gtp egress-context sgw egtp-service sgwout
+      associate egress-proto gtp egress-context pgw egtp-service sgwout
       plmn id mcc 111 mnc 222 primary
       no reporting-action event-record
     #exit
