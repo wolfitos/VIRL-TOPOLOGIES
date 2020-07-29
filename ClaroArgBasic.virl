@@ -261,7 +261,7 @@ write_files:
         </extensions>
         <interface id="0" name="eth1"/>
     </node>
-    <node name="data lattice" type="SIMPLE" subtype="server" location="413,435" vmImage="server-Ubuntu-Server_v17.28 [d7550bed-a84c-4f35-9a08-bcc97faf2e9a]" vmFlavor="m1.medium [3]">
+    <node name="data lattice" type="SIMPLE" subtype="server" location="304,437" vmImage="server-Ubuntu-Server_v17.28 [d7550bed-a84c-4f35-9a08-bcc97faf2e9a]" vmFlavor="m1.medium [3]" excludeFromLaunch="true">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">#cloud-config
@@ -709,10 +709,13 @@ end</entry>
         </extensions>
         <interface id="0" name="eth1"/>
     </node>
+    <node name="riteran-lattice" type="SIMPLE" subtype="server" location="456,443" vmImage="riteran-lattice.server [c61aad63-3d62-493a-b610-ab0aab2ed5cd]" vmFlavor="Server.COR-VPC-1 [4f32f71e-20c4-4eba-beff-4ea94a44af69]">
+        <interface id="0" name="eth1"/>
+    </node>
     <annotations/>
     <connection dst="/virl:topology/virl:node[1]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[3]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[3]"/>
     <connection dst="/virl:topology/virl:node[4]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[4]"/>
     <connection dst="/virl:topology/virl:node[1]/virl:interface[1]" src="/virl:topology/virl:node[5]/virl:interface[2]"/>
     <connection dst="/virl:topology/virl:node[1]/virl:interface[5]" src="/virl:topology/virl:node[6]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[3]" src="/virl:topology/virl:node[7]/virl:interface[1]"/>
 </topology>
