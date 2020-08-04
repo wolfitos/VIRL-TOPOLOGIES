@@ -261,81 +261,6 @@ write_files:
         </extensions>
         <interface id="0" name="eth1"/>
     </node>
-    <node name="data lattice" type="SIMPLE" subtype="server" location="304,437" vmImage="server-Ubuntu-Server_v17.28 [d7550bed-a84c-4f35-9a08-bcc97faf2e9a]" vmFlavor="m1.medium [3]" excludeFromLaunch="true">
-        <extensions>
-            <entry key="Auto-generate config" type="Boolean">false</entry>
-            <entry key="config" type="String">#cloud-config
-bootcmd:
-- ln -s -t /etc/rc.d /etc/rc.local
-hostname: server-1
-manage_etc_hosts: true
-runcmd:
-- start ttyS0
-- systemctl start getty@ttyS0.service
-- systemctl start rc-local
-- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config
-- echo "UseDNS no" &gt;&gt; /etc/ssh/sshd_config
-- service ssh restart
-- service sshd restart
-users:
-- default
-- gecos: User configured by VIRL Configuration Engine 0.21.6
-  lock-passwd: false
-  name: cisco
-  plain-text-passwd: cisco
-  shell: /bin/bash
-  ssh-authorized-keys:
-  - VIRL-USER-SSH-PUBLIC-KEY
-  sudo: ALL=(ALL) ALL
-- gecos: User configured by VIRL Configuration Engine 0.21.6
-  lock-passwd: false
-  name: cisco
-  plain-text-passwd: cisco
-  shell: /bin/bash
-  ssh-authorized-keys:
-  - VIRL-USER-SSH-PUBLIC-KEY
-  sudo: ALL=(ALL) ALL
-write_files:
-- path: /etc/init/ttyS0.conf
-  owner: root:root
-  content: |
-    # ttyS0 - getty
-    # This service maintains a getty on ttyS0 from the point the system is
-    # started until it is shut down again.
-    start on stopped rc or RUNLEVEL=[12345]
-    stop on runlevel [!12345]
-    respawn
-    exec /sbin/getty -L 115200 ttyS0 vt102
-  permissions: '0644'
-- path: /etc/systemd/system/dhclient@.service
-  content: |
-    [Unit]
-    Description=Run dhclient on %i interface
-    After=network.target
-    [Service]
-    Type=oneshot
-    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease
-    RemainAfterExit=yes
-  owner: root:root
-  permissions: '0644'
-- path: /etc/rc.local
-  owner: root:root
-  permissions: '0755'
-  content: |-
-    #!/bin/sh
-    dhclient eth0
-    ifconfig eth1 up
-    ifconfig eth1:0 192.168.1.2 255.255.255.0 up
-    ifconfig eth1:1 192.168.1.5 255.255.255.0 up
-    ifconfig eth1:2 192.168.1.7 255.255.255.0 up
-    route add -net 172.16.2.0/24 gw 192.168.1.1 dev eth1:0
-    route add -net 192.168.3.0/24 gw 192.168.1.1 dev eth1:0
-    route add -net 192.168.2.0/24 gw 192.168.1.1 dev eth1:0
-    route add -net 192.168.6.0/24 gw 192.168.1.1 dev eth1:0
-    exit 0</entry>
-        </extensions>
-        <interface id="0" name="eth1"/>
-    </node>
     <node name="Gi router" type="SIMPLE" subtype="IOSvL2" location="462,172" vmImage="IOSvL2 [377b8aa9-aeed-4394-ba1b-4ef7f869f875]" vmFlavor="IOSvL2 [058351c0-94b8-43a4-967a-bdee230885b7]">
         <extensions>
             <entry key="config" type="String">!
@@ -476,9 +401,10 @@ RHY7bMpFT5k4cvc"
   require active-charging 
   require diameter-proxy multiple
   context local
-    interface local
+    interface LAB
       ip address 172.16.1.10 255.255.255.0
     #exit
+	server telnetd
     subscriber default
     exit
     administrator cisco password cisco
@@ -487,6 +413,9 @@ RHY7bMpFT5k4cvc"
     gtpp group default
     #exit
    #exit
+   port ethernet 1/1
+	no shutdown
+    bind interface LAB local
   active-charging service lte
     ruledef dns-pkts
       tcp either-port = 53
@@ -701,7 +630,7 @@ end</entry>
         <interface id="0" name="ethernet 1/10"/>
         <interface id="1" name="ethernet 1/11"/>
     </node>
-    <node name="Sae-SIM" type="SIMPLE" subtype="server" location="587,256" vmImage="riteran.server [9e6c4d2b-b6fd-4051-ba16-0e0b8d73c77c]" vmFlavor="riteran.medium [77]">
+    <node name="Sae-SIM" type="SIMPLE" subtype="server" location="587,256" vmImage="riteran.server [9e6c4d2b-b6fd-4051-ba16-0e0b8d73c77c]" vmFlavor="riteran.medium [77]" excludeFromLaunch="true">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">#cloud-config
@@ -709,13 +638,13 @@ end</entry>
         </extensions>
         <interface id="0" name="eth1"/>
     </node>
-    <node name="riteran-lattice" type="SIMPLE" subtype="server" location="456,443" vmImage="riteran-lattice.server [c61aad63-3d62-493a-b610-ab0aab2ed5cd]" vmFlavor="Server.COR-VPC-1 [4f32f71e-20c4-4eba-beff-4ea94a44af69]">
+    <node name="riteran-lattice" type="SIMPLE" subtype="server" location="412,447" vmImage="riteran-lattice.server [e5c160db-582e-492e-b295-98c0c548afa6]" vmFlavor="Server.COR-VPC-1 [4f32f71e-20c4-4eba-beff-4ea94a44af69]">
         <interface id="0" name="eth1"/>
     </node>
     <annotations/>
     <connection dst="/virl:topology/virl:node[1]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[4]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[4]"/>
-    <connection dst="/virl:topology/virl:node[1]/virl:interface[1]" src="/virl:topology/virl:node[5]/virl:interface[2]"/>
-    <connection dst="/virl:topology/virl:node[1]/virl:interface[5]" src="/virl:topology/virl:node[6]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[1]/virl:interface[3]" src="/virl:topology/virl:node[7]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[3]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[1]" src="/virl:topology/virl:node[4]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[5]" src="/virl:topology/virl:node[5]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[3]" src="/virl:topology/virl:node[6]/virl:interface[1]"/>
 </topology>
