@@ -122,7 +122,7 @@ context srp
       bind address 10.1.1.2
     #exit
     interface 1/10-leaf-1-srp-vlan-1105-v4
-      ip address 10.2.2.3 255.255.255.0
+      ip address 10.2.2.2 255.255.255.0
     #exit
     interface srp_loopback loopback
       ip address 10.1.1.2 255.255.255.255
@@ -133,7 +133,7 @@ context srp
     #exit
     gtpp group default
     #exit
-    ip route 0.0.0.0 0.0.0.0 10.2.2.2 1/10-leaf-1-srp-vlan-1105-v4
+    ip route 0.0.0.0 0.0.0.0 10.2.2.2 1/10-101
     ip igmp profile default
     #exit
   #exit
@@ -158,6 +158,8 @@ context srp
     <node name="CP-1" type="SIMPLE" subtype="StarOS" location="189,446" vmImage="StarOS-74825 [f0262eb7-7b65-473f-b856-c44a9193bc1d]" vmFlavor="StarOS.Large [c665befd-f810-4c57-94cf-6de0f3c44208]">
         <extensions>
             <entry key="config" type="String">config
+cli hidden
+tech-support test-command password boxer
 license key "\
 VER=1|DOI=1588623124|ISS=3|NUM=207512|CMT=SWIFT_License|LSG=2000000|LE\
 C=2000000|FIS=Y|FR4=Y|FSR=Y|FPM=Y|FID=Y|FI6=Y|FLI=Y|FFA=Y|FCA=Y|FTP=Y|\
@@ -432,6 +434,10 @@ interface GigabitEthernet0/4
 !
 no ip http server
 no ip http secure-server
+ip route 10.4.4.2 255.255.255.255 10.3.3.1
+ip route 10.4.4.4 255.255.255.255 10.3.3.3
+ip route 10.1.1.2 255.255.255.255 10.2.2.3 
+ip route 10.1.1.1 255.255.255.255 10.2.2.1 
 ip route 172.16.2.2 255.255.255.255 192.168.3.2 
 ip route 172.16.2.4 255.255.255.255 192.168.3.2 
 ip route 172.16.2.6 255.255.255.255 192.168.3.2 
@@ -468,17 +474,29 @@ end</entry>
             <entry key="config" type="String">!
 interface GigabitEthernet0/1
  no shutdown
- switchport access vlan 100
- switchport mode access
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
  negotiation auto
 !
 interface GigabitEthernet0/2
  no shutdown
- switchport access vlan 100
- switchport mode access
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
  negotiation auto
 !
 interface GigabitEthernet0/3
+ no shutdown
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ negotiation auto
+!
+interface GigabitEthernet1/0
+ no shutdown
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ negotiation auto
+!
+interface GigabitEthernet1/1
  no shutdown
  switchport trunk encapsulation dot1q
  switchport mode trunk
@@ -491,7 +509,7 @@ interface GigabitEthernet0/3
         <interface id="3" name="GigabitEthernet1/0"/>
         <interface id="4" name="GigabitEthernet1/1"/>
     </node>
-    <node name="UP-1" type="SIMPLE" subtype="StarOS" location="368,440" vmImage="StarOS-74825 [f0262eb7-7b65-473f-b856-c44a9193bc1d]" vmFlavor="StarOS.Large [c665befd-f810-4c57-94cf-6de0f3c44208]">
+    <node name="UP-1" type="SIMPLE" subtype="StarOS" location="385,438" vmImage="StarOS-74825 [f0262eb7-7b65-473f-b856-c44a9193bc1d]" vmFlavor="StarOS.Large [c665befd-f810-4c57-94cf-6de0f3c44208]">
         <extensions>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="config" type="String">configure
@@ -610,6 +628,7 @@ context gw
       associate control-plane-group cp-group-1 
       associate userplane-overload-control-profile up-overload-control 
     exit
+    ip route 0.0.0.0 0.0.0.0 10.3.3.5 1/10-101
     ip domain-lookup
     ip name-servers 172.57.10.63 172.57.9.223
     ip igmp profile default
