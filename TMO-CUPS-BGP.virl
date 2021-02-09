@@ -22,6 +22,7 @@ hFnUUWZZTiwgIUa/6cRFiZ81+GIK1RfNwwVB2Ejz8"
     interface local
       ip address 172.16.1.12 255.255.255.0
     #exit
+	server telnetd
     subscriber default
     exit
     administrator cisco password cisco
@@ -238,6 +239,7 @@ hFnUUWZZTiwgIUa/6cRFiZ81+GIK1RfNwwVB2Ejz8"
     interface local
       ip address 172.16.1.11 255.255.255.0
     #exit
+	server telnetd
     subscriber default
     exit
     administrator cisco password cisco
@@ -662,6 +664,7 @@ hFnUUWZZTiwgIUa/6cRFiZ81+GIK1RfNwwVB2Ejz8"
     interface local
       ip address 172.16.1.13 255.255.255.0
     #exit
+	server telnetd
     subscriber default
     exit
     administrator cisco password cisco
@@ -744,26 +747,8 @@ context gw
       instance-type userplane
       bind ipv4-address 10.4.4.4
       sx-protocol heartbeat interval 30
-      sx-protocol heartbeat retransmission-timeout 3
-      sx-protocol heartbeat max-retransmissions 3
-    exit
-    gtpu-service sx-u
-      source-port non-standard offset 5
-      bind ipv4-address 10.4.4.3 bearer-type all
-      bind ipv4-address 10.176.194.44 bearer-type all
-    exit
-    gtpu peer statistics threshold 128000
-    sx-service sx
-      instance-type userplane
-      bind ipv4-address 10.176.194.43
-      sx-protocol heartbeat interval 30
-      sx-protocol heartbeat retransmission-timeout 3
-      sx-protocol heartbeat max-retransmissions 3
-    exit
-    egtp-service pgw-in-c
-      interface-type interface-pgw-ingress s2b
-      gtpc bind ipv4-address 7.7.7.7
-      cups-enabled
+      sx-protocol heartbeat retransmission-timeout 7
+      sx-protocol heartbeat max-retransmissions 7
     exit
     user-plane-service saegw-u
       associate gtpu-service s5u-pgw pgw-ingress
@@ -857,6 +842,7 @@ hFnUUWZZTiwgIUa/6cRFiZ81+GIK1RfNwwVB2Ejz8"
     interface local
       ip address 172.16.1.14 255.255.255.0
     #exit
+	server telnetd
     subscriber default
     exit
     administrator cisco password cisco
@@ -939,25 +925,8 @@ context gw
       instance-type userplane
       bind ipv4-address 10.4.4.4
       sx-protocol heartbeat interval 30
-      sx-protocol heartbeat retransmission-timeout 3
-      sx-protocol heartbeat max-retransmissions 3
-    exit
-    user-plane-service saegw-u
-      associate gtpu-service s5u-pgw pgw-ingress
-      associate gtpu-service s1u sgw-ingress
-      associate gtpu-service s5u-sgw sgw-egress
-      associate gtpu-service sx-u cp-tunnel
-      associate sx-service sx 
-      associate fast-path service
-      associate control-plane-group cp-group-1 
-      associate userplane-overload-control-profile up-overload-control 
-    exit
-    sx-service sx
-      instance-type userplane
-      bind ipv4-address 10.4.4.4
-      sx-protocol heartbeat interval 30
-      sx-protocol heartbeat retransmission-timeout 3
-      sx-protocol heartbeat max-retransmissions 3
+      sx-protocol heartbeat retransmission-timeout 7
+      sx-protocol heartbeat max-retransmissions 7
     exit
     user-plane-service saegw-u
       associate gtpu-service s5u-pgw pgw-ingress
